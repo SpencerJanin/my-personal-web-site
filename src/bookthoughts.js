@@ -2,7 +2,14 @@ import React, { Component } from "react";
 import NavBar from "./components/navbar";
 import BookCards from "./components/bookcards";
 import BookSearch from "./components/booksearch";
-import { Form, Button, FormControl, Row, Container } from "react-bootstrap";
+import {
+  Col,
+  Form,
+  Button,
+  FormControl,
+  Row,
+  Container,
+} from "react-bootstrap";
 import BookShelf from "./components/bookshelf";
 class BookThoughts extends Component {
   state = {
@@ -53,8 +60,14 @@ class BookThoughts extends Component {
   renderLoadingView() {
     return (
       <div>
-        <BookSearch bookSelect={this.bookSelect} />
-        <BookShelf />
+        <Row>
+          <Col>
+            <BookSearch bookSelect={this.bookSelect} />
+          </Col>
+          <Col>
+            <BookShelf />
+          </Col>
+        </Row>
       </div>
     );
   }
@@ -64,8 +77,17 @@ class BookThoughts extends Component {
     }
     return (
       <div>
-        <BookSearch bookSelect={this.bookSelect} />
-        <BookCards bookDetails={this.state.bookSelectedDetails} />
+        <div>
+          <Row>
+            <Col>
+              <BookSearch bookSelect={this.bookSelect} />
+              <BookCards bookDetails={this.state.bookSelectedDetails} />
+            </Col>
+            <Col>
+              <BookShelf />
+            </Col>
+          </Row>
+        </div>
       </div>
     );
   }

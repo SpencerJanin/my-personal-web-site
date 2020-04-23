@@ -20,11 +20,7 @@ class SearchBook extends Component {
       text: text.value,
     });
     let book = text.replace(" ", "%20");
-    fetch(
-      "https://www.googleapis.com/books/v1/volumes?q=+intitle:" +
-        book +
-        "&key=AIzaSyBVNA1JaDA8WqbYamuUOu-UAXhRknQNGyg"
-    )
+    fetch("https://www.googleapis.com/books/v1/volumes?q=+intitle:" + book + "")
       .then((res) => res.json())
       .then(
         (result) => {
@@ -73,7 +69,7 @@ class SearchBook extends Component {
           <Container fluid>
             <Row fluid>
               <Typeahead
-                style={{ width: "90%" }}
+                style={{ width: "100%" }}
                 {...this.state}
                 id="basic-example"
                 onInputChange={this.bookSearchSuggestions}
