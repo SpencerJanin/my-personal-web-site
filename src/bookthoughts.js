@@ -18,13 +18,21 @@ class BookThoughts extends Component {
     isLoading: true,
     books: [],
   };
-
   AddBookToLocalStorage = (bookInfo) => {
+    let bookHold = this.state.books;
     localStorage.setItem(bookInfo.volumeInfo.title, JSON.stringify(bookInfo));
-    return <BookShelf />;
+    /* localStorage.setItem(bookInfo.volumeInfo.title, JSON.stringify(bookInfo));
+    const books = this.state.books.filter((c) => book.id !== counterId);
+    this.setState({ counters });
+    console.log("Hello:", counterId);
+    return <BookShelf />;*/
+    this.loadBookShelf();
   };
-  deleteCards(title) {
-    //localStorage.removeItem(title);
+  deleteCards(id, bookDetails) {
+    const books = this.state.books.filter((book) => book.id !== id);
+    this.setState({ books: books });
+    localStorage.removeItem(bookDetails.volumeInfo.title);
+    this.loadBookShelf();
   }
 
   changeBookSearchView(result) {
@@ -36,60 +44,60 @@ class BookThoughts extends Component {
       () => console.log(this.state.bookSelectedDetails)
     );
   }
-  renderLoadingView() {
-    return (
-      <div>
-        <Row>
-          <Col>
-            <BookSearch
-              bookAdd={this.AddBookToLocalStorage}
-              changeBookView={this.changeBookSearchView.bind(this)}
-            />
-          </Col>
-          <Col>
-            <BookShelf books={this.state.books} />
-          </Col>
-        </Row>
-      </div>
-    );
-  }
 
-  render() {
+  loadBookShelf() {
     let items = { ...localStorage };
     let temp = [];
     let stuff = [];
-    this.state.books = [];
+    let bookLoad = [];
+    console.log(this.state.books);
     for (var i = 0; i < localStorage.length; i++) {
       var key = localStorage.key(i);
       temp.push(localStorage.getItem(key));
-      this.state.books.push(
+      bookLoad.push(
         <BookCards
           caller="bookShelf"
           bookDetails={JSON.parse(localStorage.getItem(key))}
-          deleteCards={this.deleteCards}
+          deleteCards={this.deleteCards.bind(this)}
+          id={i}
+        />
+      );
+      this.setState({
+        books: bookLoad,
+      });
+    }
+  }
+  componentDidMount() {
+    this.loadBookShelf();
+  }
+  renderLoadingView() {
+    if (this.state.isLoading) {
+      return <div></div>;
+    } else {
+      return (
+        <BookCards
+          bookAdd={this.AddBookToLocalStorage}
+          bookDetails={this.state.bookSelectedDetails}
         />
       );
     }
-    if (this.state.isLoading) {
-      return this.renderLoadingView();
-    }
+  }
+  render() {
     return (
       <div>
         <div>
           <Row>
             <Col>
               <BookSearch
+                bookAdd={this.AddBookToLocalStorage}
                 changeBookView={this.changeBookSearchView.bind(this)}
               />
-              <BookCards
-                bookAdd={this.AddBookToLocalStorage}
-                bookDetails={this.state.bookSelectedDetails}
-              />
+              {this.renderLoadingView()}
             </Col>
             <Col>
               <BookShelf
                 books={this.state.books}
-                deleteCards={this.deleteCards.bind(this)}
+                deleteCards={this.deleteCards}
               />
             </Col>
           </Row>
