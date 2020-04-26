@@ -61,6 +61,44 @@ class SearchBook extends Component {
         }
       );
   };
+  bookSelect = (selected) => {
+    let book = selected[0];
+    this.setState(
+      {
+        bookSelectedName: book,
+      },
+      () => this.getBookDetails(this.state.bookSelectedName) //needed as setstate is Async
+    );
+  };
+  async getBookDetails(bookPassed) {
+    try {
+      console.log(bookPassed);
+    } catch {
+      return;
+    }
+    const response = await fetch(
+      "https://www.googleapis.com/books/v1/volumes/" +
+        bookPassed.key +
+        "?key=AIzaSyBVNA1JaDA8WqbYamuUOu-UAXhRknQNGyg"
+    )
+      .then((res) => res.json())
+      .then(
+        (result) => {
+          console.log("Results:", result);
+          this.props.changeBookView(result);
+        },
+        // Note: it's important to handle errors here
+        // instead of a catch() block so that we don't swallow
+        // exceptions from actual bugs in components.
+        (error) => {
+          this.setState({
+            isLoaded: true,
+            error,
+          });
+        }
+      );
+  }
+
   //If more than 100 results, say put more info
   render() {
     return (
@@ -75,7 +113,7 @@ class SearchBook extends Component {
                 onInputChange={this.bookSearchSuggestions}
                 options={this.state.choices}
                 placeholder="Search for a book"
-                onChange={this.props.bookSelect}
+                onChange={this.bookSelect}
               />
             </Row>
           </Container>

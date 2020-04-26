@@ -5,18 +5,7 @@ class BookCards extends Component {
   state = {
     item: [],
   };
-  AddBookToLocalStorage = () => {
-    localStorage.setItem(
-      this.props.bookDetails.volumeInfo.title,
-      JSON.stringify(this.props.bookDetails)
-    );
-    this.props.reloadShelf();
-    return <BookShelf />;
-  };
-  deleteCards = () => {
-    localStorage.removeItem(this.props.bookDetails.volumeInfo.title);
-    this.props.reloadShelf();
-  };
+
   render() {
     console.log("Hi", this.props.bookDetails);
     let book = this.props.bookDetails;
@@ -24,11 +13,13 @@ class BookCards extends Component {
     let button = "";
     console.log(this.props);
     if (this.props.caller == "bookShelf") {
-      button = <Button onClick={this.deleteCards}>Remove Book</Button>;
-    } else {
       button = (
-        <Button onClick={this.AddBookToLocalStorage}>Add to shelf</Button>
+        <Button onClick={this.props.deleteCards(bookVolume.title)}>
+          Remove Book
+        </Button>
       );
+    } else {
+      button = <Button onClick={this.props.bookAdd(book)}>Add to shelf</Button>;
     }
     return (
       <div>

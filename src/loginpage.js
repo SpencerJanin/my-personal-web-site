@@ -7,7 +7,7 @@ class LoginPage extends Component {
   render() {
     return (
       <div>
-        <LoginScreen Style={{ minHeight: "100vh" }} />
+        <LoginScreen />
       </div>
     );
   }

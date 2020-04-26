@@ -16,62 +16,60 @@ class BookThoughts extends Component {
     bookSelectedName: "",
     bookSelectedDetails: [],
     isLoading: true,
+    books: [],
   };
 
-  bookSelect = (selected) => {
-    let book = selected[0];
+  AddBookToLocalStorage = (bookInfo) => {
+    localStorage.setItem(bookInfo.volumeInfo.title, JSON.stringify(bookInfo));
+    return <BookShelf />;
+  };
+  deleteCards(title) {
+    //localStorage.removeItem(title);
+  }
+
+  changeBookSearchView(result) {
     this.setState(
       {
-        bookSelectedName: book,
+        bookSelectedDetails: result,
+        isLoading: false,
       },
-      () => this.getBookDetails(this.state.bookSelectedName) //needed as setstate is Async
+      () => console.log(this.state.bookSelectedDetails)
     );
-  };
-  async getBookDetails(bookPassed) {
-    console.log("Passed", bookPassed.key);
-    const response = await fetch(
-      "https://www.googleapis.com/books/v1/volumes/" +
-        bookPassed.key +
-        "?key=AIzaSyBVNA1JaDA8WqbYamuUOu-UAXhRknQNGyg"
-    )
-      .then((res) => res.json())
-      .then(
-        (result) => {
-          console.log("Results:", result);
-          this.setState(
-            {
-              bookSelectedDetails: result,
-              isLoading: false,
-            },
-            () => console.log(this.state.bookSelectedDetails)
-          );
-        },
-        // Note: it's important to handle errors here
-        // instead of a catch() block so that we don't swallow
-        // exceptions from actual bugs in components.
-        (error) => {
-          this.setState({
-            isLoaded: true,
-            error,
-          });
-        }
-      );
   }
   renderLoadingView() {
     return (
       <div>
         <Row>
           <Col>
-            <BookSearch bookSelect={this.bookSelect} />
+            <BookSearch
+              bookAdd={this.AddBookToLocalStorage}
+              changeBookView={this.changeBookSearchView.bind(this)}
+            />
           </Col>
           <Col>
-            <BookShelf />
+            <BookShelf books={this.state.books} />
           </Col>
         </Row>
       </div>
     );
   }
+
   render() {
+    let items = { ...localStorage };
+    let temp = [];
+    let stuff = [];
+    this.state.books = [];
+    for (var i = 0; i < localStorage.length; i++) {
+      var key = localStorage.key(i);
+      temp.push(localStorage.getItem(key));
+      this.state.books.push(
+        <BookCards
+          caller="bookShelf"
+          bookDetails={JSON.parse(localStorage.getItem(key))}
+          deleteCards={this.deleteCards}
+        />
+      );
+    }
     if (this.state.isLoading) {
       return this.renderLoadingView();
     }
@@ -80,11 +78,19 @@ class BookThoughts extends Component {
         <div>
           <Row>
             <Col>
-              <BookSearch bookSelect={this.bookSelect} />
-              <BookCards bookDetails={this.state.bookSelectedDetails} />
+              <BookSearch
+                changeBookView={this.changeBookSearchView.bind(this)}
+              />
+              <BookCards
+                bookAdd={this.AddBookToLocalStorage}
+                bookDetails={this.state.bookSelectedDetails}
+              />
             </Col>
             <Col>
-              <BookShelf />
+              <BookShelf
+                books={this.state.books}
+                deleteCards={this.deleteCards.bind(this)}
+              />
             </Col>
           </Row>
         </div>
